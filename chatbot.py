@@ -60,19 +60,26 @@ def send_welcome(message):
 @bot.message_handler(commands=['help'])
 def send_reply(message):
     bot.reply_to(
-        message, "@cedar_234 突发奇想写出来的一个bot。他的功能包括但不限于：时不时复读，时不时发怪图,etc")
+        message, "@cedar_234 突发奇想写出来的一个bot。他的功能包括但不限于：时不时复读，时不时发怪图，etc")
 
 
-message_prev = ""
+message_prev = "空的"
 has_replied = 0
 
 
 @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
 def echo_message(message):
     # time.sleep(3+random.randint(0, 10))
+    # message_prev = "空的"
+    # has_replied = 0
+    
     global message_prev, has_replied
-    if (message.text == message_prev and has_replied == 0):
-        bot.send_message(message.chat.id, message.text)
+    # bot.send_message(message.chat.id, str(has_replied))
+    # bot.send_message(message.chat.id, message_prev)
+    # bot.send_message(message.chat.id, message.text)
+    if (message.text is message_prev and has_replied != 1):
+        bot.send_message(message.chat.id, message_prev)
+        # bot.send_message(message.chat.id, str(has_replied))
         has_replied = 1
 
     if (message.text != message_prev):
@@ -82,20 +89,26 @@ def echo_message(message):
         if ("@cedar_234_bot" in message.text or "bot" in message.text):
             bot.send_message(
                 message.chat.id, reply_list[random.randint(0, len(reply_list)-1)])
+            has_replied = 1
         else:
             if (freq.gettrue("response")):
                 if freq.gettrue("bubbling"):
                     bot.send_message(
                         message.chat.id, bubbling_list[random.randint(0, len(bubbling_list)-1)])
+                    has_replied = 1
                 else:
                     if message.text:
                         bot.send_message(message.chat.id, manipulate(message.text))
+                        has_replied = 1
                 if (freq.gettrue("sticker")):
                     bot.send_sticker(
                         message.chat.id, sticker_list[random.randint(0, len(sticker_list)-1)])
-        has_replied = 1
+                    has_replied = 1
 
+    # bot.send_message(message.chat.id, message_prev)
+    
     message_prev = message.text
+    
 
 
 bot.infinity_polling()

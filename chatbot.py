@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import telebot
 import random
 import time
@@ -67,17 +66,17 @@ message_prev = "空的"
 has_replied = 0
 
 
-@bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
+@bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact'])
 def echo_message(message):
     # time.sleep(3+random.randint(0, 10))
     # message_prev = "空的"
     # has_replied = 0
-    
+
     global message_prev, has_replied
     # bot.send_message(message.chat.id, str(has_replied))
     # bot.send_message(message.chat.id, message_prev)
     # bot.send_message(message.chat.id, message.text)
-    if (message.text is message_prev and has_replied != 1):
+    if (message.text == message_prev and has_replied != 1):
         bot.send_message(message.chat.id, message_prev)
         # bot.send_message(message.chat.id, str(has_replied))
         has_replied = 1
@@ -86,7 +85,8 @@ def echo_message(message):
         has_replied = 0
 
     if (has_replied == 0):
-        if ("@cedar_234_bot" in message.text or "bot" in message.text):
+        if ("@cedar_234_bot" in message.text):
+            # or "bot" in message.text
             bot.send_message(
                 message.chat.id, reply_list[random.randint(0, len(reply_list)-1)])
             has_replied = 1
@@ -98,7 +98,8 @@ def echo_message(message):
                     has_replied = 1
                 else:
                     if message.text:
-                        bot.send_message(message.chat.id, manipulate(message.text))
+                        bot.send_message(
+                            message.chat.id, manipulate(message.text))
                         has_replied = 1
                 if (freq.gettrue("sticker")):
                     bot.send_sticker(
@@ -106,9 +107,29 @@ def echo_message(message):
                     has_replied = 1
 
     # bot.send_message(message.chat.id, message_prev)
-    
+
     message_prev = message.text
-    
+
+
+has_replied_sticker = 0
+sticker_prev_unique_id = ""
+sticker_prev_id = ""
+
+
+@bot.message_handler(func=lambda sticker: True, content_types=['sticker'])
+def echo_sticker(message):
+    global has_replied_sticker, sticker_prev_unique_id, sticker_prev_id
+    # bot.send_message(message.chat.id, str(has_replied_sticker))
+    # bot.send_sticker(message.chat.id, sticker_prev)
+    # bot.send_sticker(message.chat.id, message.sticker.file_id)
+    if (message.sticker.file_unique_id == sticker_prev_unique_id and has_replied_sticker == 0):
+        bot.send_sticker(message.chat.id, message.sticker.file_id)
+        has_replied_sticker = 1
+
+    if (message.sticker.file_unique_id != sticker_prev_unique_id):
+        has_replied_sticker = 0
+    sticker_prev_unique_id = message.sticker.file_unique_id
+    sticker_prev_id
 
 
 bot.infinity_polling()
